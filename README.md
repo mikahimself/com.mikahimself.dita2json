@@ -6,11 +6,13 @@ The `com.mikahimself.dita2json` plugin is a simple DITA-OT plugin that converts 
     {
         "title": "Topic 1",
         "text": "<p>Content goes here.</p>",
+        "type": "concept",
         "url": "topic1.htm"
     },
     {
         "title": "Topic 2",
         "text": "<p>Other content goes here.</p>",
+        "type": "concept",
         "url": "topic2.htm"
     }
 ]
