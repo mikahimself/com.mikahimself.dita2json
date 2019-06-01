@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     
-    <target name="dita2json-dita" depends="build-init, preprocess, generate-json"/>
+    <target name="dita2json-dita" depends="build-init, preprocess, generate-json, generate-toc-json"/>
     
     <target name="generate-json">
         <property name="user.jsonpath.real" location="${output.dir}/json"/>
@@ -10,6 +10,7 @@
         <xslt style="${dita.plugin.com.mikahimself.dita2json.dir}${file.separator}xsl${file.separator}generate_json.xsl" destdir="${output.dir}/json" basedir="${dita.temp.dir}" filenameparameter="FILENAME" filedirparameter="FILEDIR">
             <mapper type="regexp" from="^(.*)\.dita" to="\1.search"/>
             <param name="OUTPUTDIR" expression="${output.dir}"/>
+            <param name="ANGMAT" expression="${args.angular.material}"/>
         </xslt>
         
         <delete file="${output.dir}/json_content.json"/>
@@ -19,7 +20,15 @@
                 <include name="**/*.search"/>
             </fileset>
         </concat>
-        <echo message='{"title": "NaN", "text": "This item is for tackling the trailing comma, only.", "tags": "", "url": "NaN"}]' file="${output.dir}/json_content.json" append="true"/>
+        <echo message='{"title": "Filler", "text": "Filler to prevent file from breaking due to extra comma at the end.", "type": "concept", "url": "None"}]' file="${output.dir}/json_content.json" append="true"/>
+    </target>
+    
+    <target name="generate-toc-json">       
+        <xslt style="${dita.plugin.com.mikahimself.dita2json.dir}${file.separator}xsl${file.separator}navigation.xsl" destdir="${output.dir}" basedir="${dita.temp.dir}" filenameparameter="FILENAME" filedirparameter="FILEDIR">
+            <mapper type="regexp" from="^(.*)\.ditamap" to="\toc.json"/>
+            <param name="OUTPUTDIR" expression="${output.dir}"/>
+            <param name="ANGMAT" expression="${args.angular.material}"/>
+        </xslt>
     </target>
     
 </project>

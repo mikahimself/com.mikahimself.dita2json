@@ -3,7 +3,6 @@
 <plugin id="com.mikahimself.dita2json" >
     <require plugin="org.dita.html5"/>
     <feature extension="dita.conductor.transtype.check" value="json-dita" />
-    <feature extension="dita.xsl.html5.cover" file="xsl/navigation.xsl" />
     <feature extension="dita.conductor.target.relative" file="build-dita2json.xml" />
 </plugin>
 
