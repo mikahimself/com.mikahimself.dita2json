@@ -86,8 +86,12 @@
     
     <xsl:template match="*[contains(@class, 'image')]"><xsl:text> </xsl:text>&lt;img href='<xsl:value-of select='@href'/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
-    <!-- Uncomment to create standard HTML links --> 
+    <!-- Use this to create standard HTML links --> 
     <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a href='<xsl:value-of select="replace(@href, '.dita', '.htm')"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
+    
+    <!-- Use this to create Angular router links. -->
+    <!-- <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a ng-reflect-router-link='/<xsl:value-of select="replace(@href, '.dita', '.htm')"/>' href='<xsl:value-of select="concat('/', replace(@href, '.dita', '.htm'))"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>-->
+    
     
     <!-- Table handling -->
     <xsl:template match="*[contains(@class, ' topic/table ')]">&lt;table><xsl:apply-templates/>&lt;/table></xsl:template>
@@ -96,10 +100,7 @@
     
     <xsl:template match="*[contains(@class, ' topic/row ')]">&lt;tr><xsl:apply-templates/>&lt;/tr></xsl:template>
     
-    <xsl:template match="*[contains(@class, ' topic/entry ')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/thead ')]">&lt;th><xsl:apply-templates/>&lt;/th></xsl:when><xsl:otherwise>&lt;td><xsl:apply-templates/>&lt;/td></xsl:otherwise></xsl:choose></xsl:template>
-    
-    <!-- Comment out to create standard HTML links instead of Angular router links. -->
-    <!--    <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a ng-reflect-router-link='/<xsl:value-of select="replace(@href, '.dita', '.htm')"/>' href='<xsl:value-of select="concat('/', replace(@href, '.dita', '.htm'))"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>-->
+    <xsl:template match="*[contains(@class, ' topic/entry ')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/thead ')]">&lt;th><xsl:apply-templates/>&lt;/th></xsl:when><xsl:otherwise>&lt;td><xsl:apply-templates/>&lt;/td></xsl:otherwise></xsl:choose></xsl:template> 
     
     <!-- try to capture everything else as well. -->
     <xsl:template match="*[child::text()[normalize-space()]]" priority="-10">
