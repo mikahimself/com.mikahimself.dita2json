@@ -88,7 +88,20 @@
                         
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text>"name": "</xsl:text><xsl:value-of select="$title"></xsl:value-of><xsl:text>" }</xsl:text><xsl:if test="following-sibling::*">,&#xa;</xsl:if><xsl:if test="not(following-sibling::*)">&#xa;</xsl:if>
+                        <xsl:variable name="level">
+                            <xsl:value-of select="count(ancestor::*) * 4"/>"
+                        </xsl:variable>
+                        <xsl:text>&#xa;</xsl:text>
+                        <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) )"/><xsl:text>{&#xa;</xsl:text>
+                        <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) + 1)"/><xsl:text>"name": "</xsl:text><xsl:value-of select="$title"></xsl:value-of><xsl:text>", &#xa;</xsl:text>
+                        <xsl:if test="exists($children)">
+                            <xsl:value-of select="substring($TABS, 1, count(ancestor::*) + count(ancestor::*))"/><xsl:text>"children": [</xsl:text>
+                            <xsl:apply-templates select="$children" mode="#current"></xsl:apply-templates>
+                            <xsl:text>&#xa;</xsl:text>
+                            <xsl:value-of select="substring($TABS, 1, count(ancestor::*) + count(ancestor::*))"/><xsl:text>]</xsl:text><xsl:text>&#xa;</xsl:text><xsl:value-of select="substring($TABS, 1, count(ancestor::*) * 2 - 1)"/><xsl:text>}</xsl:text><xsl:if test="following-sibling::*">,&#xa;</xsl:if><xsl:if test="not(following-sibling::*)">&#xa;</xsl:if>
+                        </xsl:if>
+                        
+<!--                        <xsl:text>"name": "</xsl:text><xsl:value-of select="$title"></xsl:value-of><xsl:text>" }</xsl:text><xsl:if test="following-sibling::*">,&#xa;</xsl:if><xsl:if test="not(following-sibling::*)">&#xa;</xsl:if>-->
                         <xsl:text></xsl:text>
                         
                     </xsl:otherwise>

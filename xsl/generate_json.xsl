@@ -43,7 +43,7 @@
     
     <xsl:template match="text()"><xsl:value-of select="normalize-space(replace(., $QUOTE, '&amp;quot;'))"/></xsl:template>
     
-    <xsl:template match="*[contains(@class, 'p')]">&lt;p><xsl:apply-templates/>&lt;/p></xsl:template>
+    <xsl:template match="*[contains(@class, 'p')]"><xsl:choose><xsl:when test="parent::li"><xsl:apply-templates/></xsl:when><xsl:otherwise>&lt;p><xsl:apply-templates/>&lt;/p></xsl:otherwise></xsl:choose></xsl:template>
     
     <xsl:template match="*[contains(@class, 'dl')]">&lt;dl><xsl:apply-templates/>&lt;/dl></xsl:template>
     
@@ -55,24 +55,51 @@
     
     <xsl:template match="*[contains(@class, 'uicontrol')]" priority="5"><xsl:text> </xsl:text>&lt;span class='uicontrol'><xsl:apply-templates/>&lt;/span><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
-    <xsl:template match="*[contains(@class, 'title')]">&lt;title><xsl:apply-templates/>&lt;/title></xsl:template>
+    <xsl:template match="*[contains(@class, 'title')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/section ')]">&lt;h3><xsl:apply-templates/>&lt;/h3></xsl:when><xsl:when test="parent::*[contains(@class, ' topic/table ')]">&lt;caption><xsl:apply-templates/>&lt;/caption></xsl:when><xsl:when test="parent::*[contains(@class, ' topic/fig ')]"><xsl:apply-templates/></xsl:when><xsl:otherwise>&lt;title><xsl:apply-templates/>&lt;/title></xsl:otherwise></xsl:choose></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' task/step ')]" priority="5">&lt;li class='step'><xsl:apply-templates/>&lt;/li></xsl:template>
     
     <xsl:template match="*[contains(@class, 'li')]">&lt;li><xsl:apply-templates/>&lt;/li></xsl:template>
     
     <xsl:template match="*[contains(@class, 'steps')]">&lt;ol><xsl:apply-templates/>&lt;/ol></xsl:template>
+    
+    <xsl:template match="*[contains(@class, 'topic/ul')]">&lt;ul><xsl:apply-templates/>&lt;/ul></xsl:template>
     
     <!-- Increate priority. Otherwise topic/ph always wins. -->
     <xsl:template match="*[contains(@class, ' task/cmd ')]" priority="5"><xsl:apply-templates/></xsl:template>
     
     <xsl:template match="*[contains(@class, 'section')]">&lt;section><xsl:apply-templates/>&lt;/section></xsl:template>
     
+    <xsl:template match="*[contains(@class, ' topic/note ')][contains(@type, 'note')]">&lt;div class='note-container'>&lt;div class='note-note'>&lt;i class='material-icons'>error_outline&lt;/i>&lt;/div>&lt;div class='note-content'><xsl:apply-templates/>&lt;/div>&lt;/div></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' topic/note ')]">&lt;div class='note-container'>&lt;div class='note-note'>&lt;i class='material-icons'>error_outline&lt;/i>&lt;/div>&lt;div class='note-content'><xsl:apply-templates/>&lt;/div>&lt;/div></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' topic/note ')][contains(@type, 'warning')]">&lt;div class='note-container'>&lt;div class='note-note'>&lt;i class='material-icons'>warning&lt;/i>&lt;/div>&lt;div class='note-content'><xsl:apply-templates/>&lt;/div>&lt;/div></xsl:template>
+    
     <xsl:template match="*[contains(@class, 'context')]">&lt;div class='context'><xsl:apply-templates/>&lt;/div></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' task/info')]">&lt;div class='info'><xsl:apply-templates/>&lt;/div></xsl:template>
     
     <xsl:template match="*[contains(@class, 'postreq')]">&lt;div class='postreq'><xsl:apply-templates/>&lt;/div></xsl:template>
     
     <xsl:template match="*[contains(@class, ' topic/ph ')]"><xsl:text> </xsl:text>&lt;span><xsl:apply-templates/>&lt;/span><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
     <xsl:template match="*[contains(@class, 'image')]"><xsl:text> </xsl:text>&lt;img href='<xsl:value-of select='@href'/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
+    
+    <!-- Uncomment to create standard HTML links --> 
+    <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a href='<xsl:value-of select="replace(@href, '.dita', '.htm')"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
+    
+    <!-- Table handling -->
+    <xsl:template match="*[contains(@class, ' topic/table ')]">&lt;table><xsl:apply-templates/>&lt;/table></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' topic/thead ')]">&lt;thead><xsl:apply-templates/>&lt;/thead></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' topic/row ')]">&lt;tr><xsl:apply-templates/>&lt;/tr></xsl:template>
+    
+    <xsl:template match="*[contains(@class, ' topic/entry ')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/thead ')]">&lt;th><xsl:apply-templates/>&lt;/th></xsl:when><xsl:otherwise>&lt;td><xsl:apply-templates/>&lt;/td></xsl:otherwise></xsl:choose></xsl:template>
+    
+    <!-- Comment out to create standard HTML links instead of Angular router links. -->
+    <!--    <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a ng-reflect-router-link='/<xsl:value-of select="replace(@href, '.dita', '.htm')"/>' href='<xsl:value-of select="concat('/', replace(@href, '.dita', '.htm'))"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>-->
     
     <!-- try to capture everything else as well. -->
     <xsl:template match="*[child::text()[normalize-space()]]" priority="-10">
