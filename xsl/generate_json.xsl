@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dita-ot="http://dita-ot.sourceforge.net/ns/201007/dita-ot" version="2.0">
     <xsl:strip-space elements="*" />
     <xsl:output method="text"/>
     <xsl:param name="FILENAME">unknown</xsl:param>
@@ -32,7 +32,12 @@
                 <xsl:value-of select="normalize-space(/task/title)"/>
                 <xsl:value-of select="normalize-space(/reference/title)"/>
             </xsl:variable>
-            {"title": "<xsl:value-of select="replace($topictitle, $QUOTE, '&amp;quot;')"/>", "text": "<xsl:value-of select="$newstring"/>", "type": "<xsl:value-of select="$topicType"/>", "url": "<xsl:value-of select="replace($FILENAME, '.dita', '.htm')"/>"},</xsl:if></xsl:template>
+            {
+            "title": "<xsl:value-of select="replace($topictitle, $QUOTE, '&amp;quot;')"/>",
+            "text": "<xsl:value-of select="$newstring"/>",
+            "type": "<xsl:value-of select="$topicType"/>",
+            "href": "<xsl:value-of select="replace($FILENAME, '.dita', '.htm')"/>"
+            },</xsl:if></xsl:template>
     
     <!-- double-escape quote to avoid breaking the generated javascript files. -->
     <xsl:variable name="QUOTE">"</xsl:variable>
@@ -86,12 +91,7 @@
     
     <xsl:template match="*[contains(@class, 'image')]"><xsl:text> </xsl:text>&lt;img href='<xsl:value-of select='@href'/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
-    <!-- Use this to create standard HTML links --> 
     <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a href='<xsl:value-of select="replace(@href, '.dita', '.htm')"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
-    
-    <!-- Use this to create Angular router links. -->
-    <!-- <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a ng-reflect-router-link='/<xsl:value-of select="replace(@href, '.dita', '.htm')"/>' href='<xsl:value-of select="concat('/', replace(@href, '.dita', '.htm'))"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>-->
-    
     
     <!-- Table handling -->
     <xsl:template match="*[contains(@class, ' topic/table ')]">&lt;table><xsl:apply-templates/>&lt;/table></xsl:template>
@@ -100,7 +100,7 @@
     
     <xsl:template match="*[contains(@class, ' topic/row ')]">&lt;tr><xsl:apply-templates/>&lt;/tr></xsl:template>
     
-    <xsl:template match="*[contains(@class, ' topic/entry ')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/thead ')]">&lt;th><xsl:apply-templates/>&lt;/th></xsl:when><xsl:otherwise>&lt;td><xsl:apply-templates/>&lt;/td></xsl:otherwise></xsl:choose></xsl:template> 
+    <xsl:template match="*[contains(@class, ' topic/entry ')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/thead ')]"><xsl:choose><xsl:when test="@dita-ot:morecols">&lt;th colspan='<xsl:value-of select="@dita-ot:morecols + 1"/>'><xsl:apply-templates/>&lt;/th></xsl:when><xsl:otherwise>&lt;th><xsl:apply-templates/>&lt;/th></xsl:otherwise></xsl:choose></xsl:when><xsl:otherwise><xsl:choose><xsl:when test="@dita-ot:morecols">&lt;td colspan='<xsl:value-of select="@dita-ot:morecols + 1"/>'><xsl:apply-templates/>&lt;/td></xsl:when><xsl:otherwise>&lt;td><xsl:apply-templates/>&lt;/td></xsl:otherwise></xsl:choose></xsl:otherwise></xsl:choose></xsl:template> 
     
     <!-- try to capture everything else as well. -->
     <xsl:template match="*[child::text()[normalize-space()]]" priority="-10">

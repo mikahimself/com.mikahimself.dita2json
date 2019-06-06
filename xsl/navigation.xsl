@@ -7,25 +7,23 @@
     exclude-result-prefixes="xs dita-ot ditamsg">
     <xsl:output method="text"/>
     
+    <!-- Use tabs to indent entries -->
     <xsl:variable name="TABS" select="'&#9;&#9;&#9;&#9;&#9;&#9;&#9;&#9;'" />
+    
     <xsl:template match="/">
         <xsl:apply-templates mode="toc"></xsl:apply-templates>
     </xsl:template>
     
     
-    <!-- Testing. -->
-    <!-- This place start the processing of index.html file. -->
+    <!-- Go through TOC -->
     <xsl:template match="*[contains(@class, ' map/map ')]" mode="toc">
         <xsl:param name="pathFromMaplist"/>
-        <xsl:if test="descendant::*[contains(@class, ' map/topicref ')]
-            [not(@toc = 'no')]
-            [not(@processing-role = 'resource-only')]">
-            [<xsl:apply-templates select="*[contains(@class, ' map/topicref ')]" mode="toc"></xsl:apply-templates>
+        <xsl:if test="descendant::*[contains(@class, ' map/topicref ')][not(@toc = 'no')][not(@processing-role = 'resource-only')]">[<xsl:apply-templates select="*[contains(@class, ' map/topicref ')]" mode="toc"></xsl:apply-templates>
             ]
         </xsl:if>
     </xsl:template>
     
-    
+    <!-- Pick up title -->
     <xsl:template match="*" mode="get-navtitle">
         <xsl:choose>
             <!-- If navtitle is specified -->
@@ -55,9 +53,7 @@
         </xsl:choose>
     </xsl:template>
     
-    <!--main template for setting up all links after the body - applied to the related-links container-->
-    <xsl:template match="*[contains(@class, ' topic/related-links ')]" name="topic.related-links"></xsl:template>
-    
+    <!--  Generate TOC JSON-->
     <xsl:template match="*[contains(@class, ' map/topicref ')]
         [not(@toc = 'no')]
         [not(@processing-role = 'resource-only')]"
@@ -70,13 +66,13 @@
         <xsl:choose>
             <xsl:when test="normalize-space($title)">               
                 <xsl:choose>
+                    <!-- When topicref/chapter contains a href -->
                     <xsl:when test="normalize-space(@href)">
                         <xsl:variable name="level">
                             <xsl:value-of select="count(ancestor::*) * 4"/>"
                         </xsl:variable>
                         <xsl:text>&#xa;</xsl:text>
                         <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) )"/><xsl:text>{&#xa;</xsl:text>
-                        <!--<xsl:value-of select="substring($TABS, 1, count(ancestor::*))"/><xsl:text>{&#xa;</xsl:text>-->
                         <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) + 1)"/><xsl:text>"name": "</xsl:text><xsl:value-of select="$title"></xsl:value-of><xsl:text>", &#xa;</xsl:text>
                         <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) + 1)"/><xsl:text>"href": "</xsl:text><xsl:value-of select="replace(@href, '.dita', '.htm')"/><xsl:text>"</xsl:text><xsl:if test="not(exists($children))"><xsl:text>&#xa;</xsl:text><xsl:value-of select="substring($TABS, 1, count(ancestor::*)  + count(ancestor::*) - 1)"/><xsl:text>}</xsl:text><xsl:if test="following-sibling::*">,</xsl:if><xsl:if test="not(following-sibling::*)"></xsl:if></xsl:if><xsl:if test="(exists($children))"><xsl:text>,&#xa;</xsl:text></xsl:if>
                         <xsl:if test="exists($children)">
@@ -85,8 +81,8 @@
                             <xsl:text>&#xa;</xsl:text>
                             <xsl:value-of select="substring($TABS, 1, count(ancestor::*) + count(ancestor::*))"/><xsl:text>]</xsl:text><xsl:text>&#xa;</xsl:text><xsl:value-of select="substring($TABS, 1, count(ancestor::*) * 2 - 1)"/><xsl:text>}</xsl:text><xsl:if test="following-sibling::*">,&#xa;</xsl:if><xsl:if test="not(following-sibling::*)">&#xa;</xsl:if>
                         </xsl:if>
-                        
                     </xsl:when>
+                    <!-- When topicref/chapter only contains a navtitle -->
                     <xsl:otherwise>
                         <xsl:variable name="level">
                             <xsl:value-of select="count(ancestor::*) * 4"/>"
@@ -94,23 +90,17 @@
                         <xsl:text>&#xa;</xsl:text>
                         <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) )"/><xsl:text>{&#xa;</xsl:text>
                         <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) + 1)"/><xsl:text>"name": "</xsl:text><xsl:value-of select="$title"></xsl:value-of><xsl:text>", &#xa;</xsl:text>
+                        <xsl:value-of select="substring($TABS, 0, count(ancestor::*) + count(ancestor::*) + 1)"/><xsl:text>"href": "</xsl:text><xsl:value-of select="'#'"/><xsl:text>"</xsl:text><xsl:if test="not(exists($children))"><xsl:text>&#xa;</xsl:text><xsl:value-of select="substring($TABS, 1, count(ancestor::*)  + count(ancestor::*) - 1)"/><xsl:text>}</xsl:text><xsl:if test="following-sibling::*">,</xsl:if><xsl:if test="not(following-sibling::*)"></xsl:if></xsl:if><xsl:if test="(exists($children))"><xsl:text>,&#xa;</xsl:text></xsl:if>
                         <xsl:if test="exists($children)">
                             <xsl:value-of select="substring($TABS, 1, count(ancestor::*) + count(ancestor::*))"/><xsl:text>"children": [</xsl:text>
                             <xsl:apply-templates select="$children" mode="#current"></xsl:apply-templates>
                             <xsl:text>&#xa;</xsl:text>
                             <xsl:value-of select="substring($TABS, 1, count(ancestor::*) + count(ancestor::*))"/><xsl:text>]</xsl:text><xsl:text>&#xa;</xsl:text><xsl:value-of select="substring($TABS, 1, count(ancestor::*) * 2 - 1)"/><xsl:text>}</xsl:text><xsl:if test="following-sibling::*">,&#xa;</xsl:if><xsl:if test="not(following-sibling::*)">&#xa;</xsl:if>
                         </xsl:if>
-                        
-<!--                        <xsl:text>"name": "</xsl:text><xsl:value-of select="$title"></xsl:value-of><xsl:text>" }</xsl:text><xsl:if test="following-sibling::*">,&#xa;</xsl:if><xsl:if test="not(following-sibling::*)">&#xa;</xsl:if>-->
-                        <xsl:text></xsl:text>
-                        
                     </xsl:otherwise>
                 </xsl:choose>
-                
             </xsl:when>
         </xsl:choose>
     </xsl:template>
-    
-    
     
 </xsl:stylesheet>
