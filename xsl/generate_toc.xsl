@@ -19,8 +19,7 @@
     <xsl:template match="*[contains(@class, ' map/map ')]" mode="toc">
         <xsl:param name="pathFromMaplist"/>
         <xsl:if test="descendant::*[contains(@class, ' map/topicref ')][not(@toc = 'no')][not(@processing-role = 'resource-only')]">[<xsl:apply-templates select="*[contains(@class, ' map/topicref ')]" mode="toc"></xsl:apply-templates>
-            ]
-        </xsl:if>
+]</xsl:if>
     </xsl:template>
     
     <!-- Pick up title -->

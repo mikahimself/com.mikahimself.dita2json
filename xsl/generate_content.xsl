@@ -32,12 +32,12 @@
                 <xsl:value-of select="normalize-space(/task/title)"/>
                 <xsl:value-of select="normalize-space(/reference/title)"/>
             </xsl:variable>
-            {
-            "title": "<xsl:value-of select="replace($topictitle, $QUOTE, '&amp;quot;')"/>",
-            "text": "<xsl:value-of select="$newstring"/>",
-            "type": "<xsl:value-of select="$topicType"/>",
-            "href": "<xsl:value-of select="replace($FILENAME, '.dita', '.htm')"/>"
-            },</xsl:if></xsl:template>
+    {
+        "title": "<xsl:value-of select="replace($topictitle, $QUOTE, '&amp;quot;')"/>",
+        "text": "<xsl:value-of select="$newstring"/>",
+        "type": "<xsl:value-of select="$topicType"/>",
+        "href": "<xsl:value-of select="replace($FILENAME, '.dita', '.htm')"/>"
+    },</xsl:if></xsl:template>
     
     <!-- double-escape quote to avoid breaking the generated javascript files. -->
     <xsl:variable name="QUOTE">"</xsl:variable>
@@ -89,7 +89,7 @@
     
     <xsl:template match="*[contains(@class, ' topic/ph ')]"><xsl:text> </xsl:text>&lt;span><xsl:apply-templates/>&lt;/span><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
-    <xsl:template match="*[contains(@class, 'image')]"><xsl:text> </xsl:text>&lt;img href='<xsl:value-of select='@href'/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
+    <xsl:template match="*[contains(@class, ' topic/image ')]"><xsl:text> </xsl:text>&lt;img class='topic-image' src='<xsl:value-of select="replace(@href, 'Images/', 'assets/images/')"/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
     <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a href='<xsl:value-of select="replace(@href, '.dita', '.htm')"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     

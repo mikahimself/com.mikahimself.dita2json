@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     
-    <target name="dita2json-dita" depends="build-init, preprocess, generate-json, generate-toc-json"/>
+    <target name="dita2json-dita" depends="build-init, preprocess, generate-content-json, generate-toc-json"/>
     
-    <target name="generate-json">
+    <target name="generate-content-json">
         <property name="user.jsonpath.real" location="${output.dir}/json"/>
         <mkdir dir="${user.jsonpath.real}"/>
         
-        <xslt style="${dita.plugin.com.mikahimself.dita2json.dir}${file.separator}xsl${file.separator}generate_json.xsl" destdir="${output.dir}/json" basedir="${dita.temp.dir}" filenameparameter="FILENAME" filedirparameter="FILEDIR">
-            <mapper type="regexp" from="^(.*)\.dita" to="\1.search"/>
+        <xslt style="${dita.plugin.com.mikahimself.dita2json.dir}${file.separator}xsl${file.separator}generate_content.xsl" destdir="${output.dir}/json" basedir="${dita.temp.dir}" filenameparameter="FILENAME" filedirparameter="FILEDIR">
+            <mapper type="regexp" from="^(.*)\.dita" to="\1.json"/>
             <param name="OUTPUTDIR" expression="${output.dir}"/>
-            <param name="ANGMAT" expression="${args.angular.material}"/>
         </xslt>
         
-        <delete file="${output.dir}/json_content.json"/>
-        <echo message="[" file="${output.dir}/json_content.json"/>
-        <concat destfile="${output.dir}/json_content.json" append="true">
+        <delete file="${output.dir}/content.json"/>
+        <echo message="[" file="${output.dir}/content.json"/>
+        <concat destfile="${output.dir}/content.json" append="true">
             <fileset dir="${output.dir}/json">
-                <include name="**/*.search"/>
+                <include name="**/*.json"/>
             </fileset>
         </concat>
-        <echo message='{"title": "Filler", "text": "Filler to prevent file from breaking due to extra comma at the end.", "type": "concept", "url": "None"}]' file="${output.dir}/json_content.json" append="true"/>
+        <echo message='${line.separator}    {${line.separator}        "title": "Filler",${line.separator}        "text": "Filler to prevent file from breaking due to extra comma at the end.",${line.separator}        "type": "concept",${line.separator}        "url": "None"${line.separator}    }${line.separator}]' file="${output.dir}/content.json" append="true"/>
+        <delete dir="${output.dir}/json"/>
     </target>
     
     <target name="generate-toc-json">       
-        <xslt style="${dita.plugin.com.mikahimself.dita2json.dir}${file.separator}xsl${file.separator}navigation.xsl" destdir="${output.dir}" basedir="${dita.temp.dir}" filenameparameter="FILENAME" filedirparameter="FILEDIR">
+        <xslt style="${dita.plugin.com.mikahimself.dita2json.dir}${file.separator}xsl${file.separator}generate_toc.xsl" destdir="${output.dir}" basedir="${dita.temp.dir}" filenameparameter="FILENAME" filedirparameter="FILEDIR">
             <mapper type="regexp" from="^(.*)\.ditamap" to="\toc.json"/>
             <param name="OUTPUTDIR" expression="${output.dir}"/>
-            <param name="ANGMAT" expression="${args.angular.material}"/>
         </xslt>
     </target>
     
