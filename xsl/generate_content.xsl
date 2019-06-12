@@ -32,12 +32,12 @@
                 <xsl:value-of select="normalize-space(/task/title)"/>
                 <xsl:value-of select="normalize-space(/reference/title)"/>
             </xsl:variable>
-    {
-        "title": "<xsl:value-of select="replace($topictitle, $QUOTE, '&amp;quot;')"/>",
-        "text": "<xsl:value-of select="$newstring"/>",
-        "type": "<xsl:value-of select="$topicType"/>",
-        "href": "<xsl:value-of select="replace($FILENAME, '.dita', '.htm')"/>"
-    },</xsl:if></xsl:template>
+            {
+            "title": "<xsl:value-of select="replace($topictitle, $QUOTE, '&amp;quot;')"/>",
+            "text": "<xsl:value-of select="$newstring"/>",
+            "type": "<xsl:value-of select="$topicType"/>",
+            "href": "<xsl:value-of select="replace($FILENAME, '.dita', '.htm')"/>"
+            },</xsl:if></xsl:template>
     
     <!-- double-escape quote to avoid breaking the generated javascript files. -->
     <xsl:variable name="QUOTE">"</xsl:variable>
@@ -60,7 +60,7 @@
     
     <xsl:template match="*[contains(@class, 'uicontrol')]" priority="5"><xsl:text> </xsl:text>&lt;span class='uicontrol'><xsl:apply-templates/>&lt;/span><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
-    <xsl:template match="*[contains(@class, 'title')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/section ')]">&lt;h3><xsl:apply-templates/>&lt;/h3></xsl:when><xsl:when test="parent::*[contains(@class, ' topic/table ')]">&lt;caption><xsl:apply-templates/>&lt;/caption></xsl:when><xsl:when test="parent::*[contains(@class, ' topic/fig ')]"><xsl:apply-templates/></xsl:when><xsl:otherwise>&lt;title><xsl:apply-templates/>&lt;/title></xsl:otherwise></xsl:choose></xsl:template>
+    <xsl:template match="*[contains(@class, 'title')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/section ')]">&lt;h3><xsl:apply-templates/>&lt;/h3></xsl:when><xsl:when test="parent::*[contains(@class, ' topic/table ')]">&lt;caption><xsl:apply-templates/>&lt;/caption></xsl:when><xsl:when test="parent::*[contains(@class, ' topic/fig ')]">&lt;figcaption><xsl:apply-templates/>&lt;/figcaption></xsl:when><xsl:otherwise>&lt;title><xsl:apply-templates/>&lt;/title></xsl:otherwise></xsl:choose></xsl:template>
     
     <xsl:template match="*[contains(@class, ' task/step ')]" priority="5">&lt;li class='step'><xsl:apply-templates/>&lt;/li></xsl:template>
     
@@ -75,6 +75,8 @@
     
     <xsl:template match="*[contains(@class, 'section')]">&lt;section><xsl:apply-templates/>&lt;/section></xsl:template>
     
+    <xsl:template match="*[contains(@class, ' topic/fig ')]">&lt;figure><xsl:apply-templates/>&lt;/figure></xsl:template>
+    
     <xsl:template match="*[contains(@class, ' topic/note ')][contains(@type, 'note')]">&lt;div class='note-container'>&lt;div class='note-note'>&lt;i class='material-icons'>error_outline&lt;/i>&lt;/div>&lt;div class='note-content'><xsl:apply-templates/>&lt;/div>&lt;/div></xsl:template>
     
     <xsl:template match="*[contains(@class, ' topic/note ')]">&lt;div class='note-container'>&lt;div class='note-note'>&lt;i class='material-icons'>error_outline&lt;/i>&lt;/div>&lt;div class='note-content'><xsl:apply-templates/>&lt;/div>&lt;/div></xsl:template>
@@ -87,11 +89,13 @@
     
     <xsl:template match="*[contains(@class, 'postreq')]">&lt;div class='postreq'><xsl:apply-templates/>&lt;/div></xsl:template>
     
+    <xsl:template match="*[contains(@class, ' topic/desc ')]"></xsl:template>
+    
     <xsl:template match="*[contains(@class, ' topic/ph ')]"><xsl:text> </xsl:text>&lt;span><xsl:apply-templates/>&lt;/span><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
-    <xsl:template match="*[contains(@class, ' topic/image ')]"><xsl:text> </xsl:text>&lt;img class='topic-image' src='<xsl:value-of select="replace(@href, 'Images/', 'assets/images/')"/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
+    <xsl:template match="*[contains(@class, ' topic/image ')]"><xsl:choose><xsl:when test="parent::*[contains(@class, ' topic/fig ')]">&lt;img class='topic-fig-image' src='<xsl:value-of select="replace(@href, 'Images/', 'assets/images/')"/>'><xsl:apply-templates/>&lt;/img></xsl:when><xsl:otherwise><xsl:text> </xsl:text>&lt;img class='topic-inline-image' src='<xsl:value-of select="replace(@href, 'Images/', 'assets/images/')"/>'><xsl:apply-templates/>&lt;/img><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:otherwise></xsl:choose></xsl:template>
     
-    <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a href='<xsl:value-of select="replace(@href, '.dita', '.htm')"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
+    <xsl:template match="*[contains(@class, 'xref')]"><xsl:text> </xsl:text>&lt;a href='<xsl:value-of select="replace(@href, '.dita', '.htm')"/>' title='<xsl:value-of select="desc"/>'><xsl:apply-templates/>&lt;/a><xsl:if test="not(starts-with(following-sibling::text()[1], '.')) and not(starts-with(following-sibling::text()[1], ',')) and not(starts-with(following-sibling::text()[1], ':'))"><xsl:text> </xsl:text></xsl:if></xsl:template>
     
     <!-- Table handling -->
     <xsl:template match="*[contains(@class, ' topic/table ')]">&lt;table><xsl:apply-templates/>&lt;/table></xsl:template>
